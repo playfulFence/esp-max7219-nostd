@@ -15,7 +15,7 @@ repository = "https://github.com/playfulFence/esp-max7219-nostd"
 embedded-hal = "1.0.0-alpha.9"
 max7219 = "0.3.1"
 esp-hal-common = { package = "esp-hal-common", version = "0.8.0", git = "https://github.com/esp-rs/esp-hal.git" }
-# esp-alloc = { version = "0.1.0", features = ["oom-handler"] }
+esp-alloc = "0.3.0"
 
 [features]
 default = [ ]
