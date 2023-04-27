@@ -128,6 +128,34 @@ where T:Connector {
     }
 }
 
+pub fn show_moving_text_in_loop_with_joystick_interrupt<T>(
+    display: &mut MAX7219<T>,
+    text: &str,
+    display_count: usize,
+    ms_sleep: u32,
+    max_gap_width: usize,
+    delay : &mut Delay,
+)
+where T:Connector {
+    let display_count = display_count % MAX_DISPLAYS;
+
+    let raw_bits = encode_string(text);
+    let mut display_bits;
+    if max_gap_width > 0 {
+        display_bits = remove_gaps_in_display_text(&raw_bits, max_gap_width);
+    } else {
+        display_bits = raw_bits;
+    }
+    loop {
+        for i in 0..display_count {
+            display.write_raw(i, &display_bits[i]).unwrap();
+        }
+        delay.delay_ms(ms_sleep);
+        // shift all rows one bit to the left
+        shift_all_rows_one_bit_left(&mut display_bits);
+    }
+}
+
 
 /*
     Draws a point to specified display from chain (if only one display - set 0 at calling) 

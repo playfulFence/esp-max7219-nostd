@@ -11,14 +11,14 @@ pub type SingleDisplayData = [u8; LED_SQUARE_MATRIX_DIM];
 
 // Capital letter A mapping
 pub const CAP_A: SingleDisplayData = [
-    0b00111000,
-    0b01000100,
-    0b01000100,
-    0b01000100,
-    0b01111100,
-    0b01000100,
-    0b01000100,
-    0b01000100,
+    0b01110000,
+    0b10001000,
+    0b10001000,
+    0b10001000,
+    0b11111000,
+    0b10001000,
+    0b10001000,
+    0b10001000,
 ];
 pub const CAP_B: SingleDisplayData = [
     0b01111000,
