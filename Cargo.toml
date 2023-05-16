@@ -14,7 +14,7 @@ repository = "https://github.com/playfulFence/esp-max7219-nostd"
 [dependencies]
 embedded-hal = "1.0.0-alpha.9"
 max7219 = "0.3.1"
-esp-hal-common = { package = "esp-hal-common", git = "https://github.com/esp-rs/esp-hal.git"}
+esp-hal-common = { package = "esp-hal-common", git = "https://github.com/esp-rs/esp-hal.git", version = "0.9.0"}
 esp-alloc = "0.3.0"
 
 [features]

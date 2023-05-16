@@ -21,7 +21,8 @@ use max7219::connectors::PinConnector;
 use max7219::MAX7219;
 use max7219::DecodeMode;
 
-use esp_hal_common::Delay;
+//use esp_hal_common::Delay;
+use embedded_hal::{delay::DelayUs};
 use esp_hal_common::prelude::_embedded_hal_blocking_delay_DelayMs;
 
 /// We use 8x8 square matrices (per single display)
@@ -106,7 +107,7 @@ pub fn show_moving_text_in_loop<T>(
     display_count: usize,
     ms_sleep: u32,
     max_gap_width: usize,
-    delay : &mut Delay
+    delay : &mut impl DelayUs
 )
 where T:Connector {
     let display_count = display_count % MAX_DISPLAYS;
@@ -134,7 +135,7 @@ pub fn show_moving_text_in_loop_with_joystick_interrupt<T>(
     display_count: usize,
     ms_sleep: u32,
     max_gap_width: usize,
-    delay : &mut Delay,
+    delay : &mut impl DelayUs,
 )
 where T:Connector {
     let display_count = display_count % MAX_DISPLAYS;
