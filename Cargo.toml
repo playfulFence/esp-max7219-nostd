@@ -12,15 +12,15 @@ homepage = "https://github.com/playfulFence/esp-max7219-nostd"
 repository = "https://github.com/playfulFence/esp-max7219-nostd"
 
 [dependencies]
-embedded-hal = "1.0.0-alpha.9"
-max7219 = "0.3.1"
+embedded-hal = "0.2.7"
+max7219 = {git = "https://github.com/almindor/max7219.git"}
 esp-hal-common = "0.13.0"
 esp-alloc = "0.3.0"
 
 [features]
 default = [ ]
 
-esp32 = ["esp-hal-common/esp32", "esp-hal-common/esp32"]
+esp32 = ["esp-hal-common/esp32", "esp-hal-common/xtal-40mhz"]
 esp32c3 = ["esp-hal-common/esp32c3"]
 esp32s2 = ["esp-hal-common/esp32s2"]
 esp32s3 = ["esp-hal-common/esp32s3"]
