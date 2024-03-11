@@ -20,9 +20,11 @@ use max7219::connectors::PinConnector;
 use max7219::MAX7219;
 use max7219::DecodeMode;
 
-//use esp_hal_common::Delay;
-use embedded_hal::{blocking::delay::DelayMs};
-use esp_hal_common::prelude::_embedded_hal_blocking_delay_DelayMs;
+use esp_hal; 
+
+use embedded_hal::blocking::{
+    delay::DelayUs,
+};
 
 /// We use 8x8 square matrices (per single display)
 pub const LED_SQUARE_MATRIX_DIM: usize = 8;
@@ -106,7 +108,7 @@ pub fn show_moving_text_in_loop<T>(
     display_count: usize,
     ms_sleep: u32,
     max_gap_width: usize,
-    delay : &mut impl DelayMs<u32>
+    delay : &mut impl esp_hal::prelude::_embedded_hal_blocking_delay_DelayMs<u32>,
 )
 where T:Connector {
     let display_count = display_count % MAX_DISPLAYS;
@@ -134,7 +136,7 @@ pub fn show_moving_text_in_loop_with_joystick_interrupt<T>(
     display_count: usize,
     ms_sleep: u32,
     max_gap_width: usize,
-    delay : &mut impl DelayMs<u32>,
+    delay : &mut impl esp_hal::prelude::_embedded_hal_blocking_delay_DelayMs<u32>,
 )
 where T:Connector {
     let display_count = display_count % MAX_DISPLAYS;
@@ -176,7 +178,7 @@ pub fn draw_point<T>(
     if (x < 1 || x > 8 ) || (y < 1 || y > 8 ) {
         return;
     }
-    display_actual_state[y-1] |= (0b00000001 << (8-x));
+    display_actual_state[y-1] |= 0b00000001 << (8-x);
 
     display.write_raw(addr, display_actual_state).unwrap();
 }
@@ -191,7 +193,7 @@ pub fn clear_with_state<T>(
     addr: usize, 
     display_actual_state: &mut SingleDisplayData,
 ) where T:Connector {
-    display.clear_display(addr);
+    display.clear_display(addr).unwrap();
 
     for i in 0..8 {
         display_actual_state[i] &= 0;
