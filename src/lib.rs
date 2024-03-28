@@ -10,21 +10,20 @@ extern crate alloc;
 
 #[cfg(not(feature = "std"))]
 use alloc::vec::Vec;
-use max7219::DataError;
 use max7219::connectors::Connector;
+use max7219::DataError;
 
 use crate::encoding::encode_string;
 use crate::mappings::SingleDisplayData;
 
 use max7219::connectors::PinConnector;
-use max7219::MAX7219;
 use max7219::DecodeMode;
+use max7219::MAX7219;
 
-use esp_hal; 
+use esp_hal;
 
-use embedded_hal::blocking::{
-    delay::DelayUs,
-};
+use embedded_hal::blocking::delay::DelayMs;
+use embedded_hal::blocking::delay::DelayUs;
 
 /// We use 8x8 square matrices (per single display)
 pub const LED_SQUARE_MATRIX_DIM: usize = 8;
@@ -42,7 +41,7 @@ pub mod mappings;
 /// * `repeat` shift 1 bits on the very left to the ending of the vector. Without repeat
 //            the vector will be all zeros after enough iterations.
 
-pub fn shift_all_rows_one_bit_left(moving_bits: &mut [SingleDisplayData], /*, repeat: bool*/) {
+pub fn shift_all_rows_one_bit_left(moving_bits: &mut [SingleDisplayData] /*, repeat: bool*/) {
     // move all bits to next position
 
     // so we iterate through the whole vector
@@ -78,12 +77,11 @@ pub fn shift_all_rows_one_bit_left(moving_bits: &mut [SingleDisplayData], /*, re
 /// * `display` - mutable reference to Max7219 display driver
 /// * `display_count` - count of displays connected to the MAX7219
 /// * `intensity` - brightness for the display; value between `0x00` and `0x0F`
-/// 
-pub fn prepare_display<T>(
-    display: &mut MAX7219<T>,
-    display_count: usize,
-    intensity: u8
-) where T:Connector {
+///
+pub fn prepare_display<T>(display: &mut MAX7219<T>, display_count: usize, intensity: u8)
+where
+    T: Connector,
+{
     let display_count = display_count % MAX_DISPLAYS;
     display.power_on().unwrap();
     for i in 0..display_count {
@@ -101,16 +99,17 @@ pub fn prepare_display<T>(
 /// * `display_count` - count of displays connected to the MAX7219
 /// * `ms_sleep` - timeout after each iteration
 /// * `max_gap_width` - set's the maximum width/count of empty cols between characters. Recommended is 2. 0 to deactivate.
-/// 
+///
 pub fn show_moving_text_in_loop<T>(
     display: &mut MAX7219<T>,
     text: &str,
     display_count: usize,
     ms_sleep: u32,
     max_gap_width: usize,
-    delay : &mut impl esp_hal::prelude::_embedded_hal_blocking_delay_DelayMs<u32>,
-)
-where T:Connector {
+    delay: &mut impl DelayMs<u32>,
+) where
+    T: Connector,
+{
     let display_count = display_count % MAX_DISPLAYS;
 
     let raw_bits = encode_string(text);
@@ -136,9 +135,10 @@ pub fn show_moving_text_in_loop_with_joystick_interrupt<T>(
     display_count: usize,
     ms_sleep: u32,
     max_gap_width: usize,
-    delay : &mut impl esp_hal::prelude::_embedded_hal_blocking_delay_DelayMs<u32>,
-)
-where T:Connector {
+    delay: &mut impl DelayMs<u32>,
+) where
+    T: Connector,
+{
     let display_count = display_count % MAX_DISPLAYS;
 
     let raw_bits = encode_string(text);
@@ -158,9 +158,8 @@ where T:Connector {
     }
 }
 
-
 /*
-    Draws a point to specified display from chain (if only one display - set 0 at calling) 
+    Draws a point to specified display from chain (if only one display - set 0 at calling)
     according to "coordinates" which were set in function call.
 
     display_actual_state - [u8, 8] array, which contains an actual state of display
@@ -172,27 +171,31 @@ pub fn draw_point<T>(
     display: &mut MAX7219<T>,
     addr: usize,
     display_actual_state: &mut SingleDisplayData,
-    x: usize,                                                          
+    x: usize,
     y: usize,
-) where T:Connector {
-    if (x < 1 || x > 8 ) || (y < 1 || y > 8 ) {
+) where
+    T: Connector,
+{
+    if (x < 1 || x > 8) || (y < 1 || y > 8) {
         return;
     }
-    display_actual_state[y-1] |= 0b00000001 << (8-x);
+    display_actual_state[y - 1] |= 0b00000001 << (8 - x);
 
     display.write_raw(addr, display_actual_state).unwrap();
 }
 
-/* This is kinda dumb solution, but why the hell no? :D 
-    obviously, it just clears the display like a corresponding function from 
-    max7219 crate, but also clears an array with actual state 
+/* This is kinda dumb solution, but why the hell no? :D
+    obviously, it just clears the display like a corresponding function from
+    max7219 crate, but also clears an array with actual state
 */
 
 pub fn clear_with_state<T>(
     display: &mut MAX7219<T>,
-    addr: usize, 
+    addr: usize,
     display_actual_state: &mut SingleDisplayData,
-) where T:Connector {
+) where
+    T: Connector,
+{
     display.clear_display(addr).unwrap();
 
     for i in 0..8 {
@@ -202,8 +205,12 @@ pub fn clear_with_state<T>(
 
 /// Iterates through the data and removes all gaps between symbols. A gap is two or more cols
 /// after each other that are all zero.
-pub fn remove_gaps_in_display_text(display_data: &[SingleDisplayData], max_gap_size: usize) -> Vec<SingleDisplayData> {
-    let display_data: Vec<SingleDisplayData> = display_data.iter()
+pub fn remove_gaps_in_display_text(
+    display_data: &[SingleDisplayData],
+    max_gap_size: usize,
+) -> Vec<SingleDisplayData> {
+    let display_data: Vec<SingleDisplayData> = display_data
+        .iter()
         .map(|x| transpose_single_display_data(x.clone()))
         .collect();
     let mut display_data_expanded = vec![];
@@ -231,7 +238,6 @@ pub fn remove_gaps_in_display_text(display_data: &[SingleDisplayData], max_gap_s
             break;
         }
     }
-
 
     // keep empty cols at begin
     let mut shrinked_display_data_expanded = vec![0 as u8; preserve_at_begin];
@@ -266,7 +272,8 @@ pub fn remove_gaps_in_display_text(display_data: &[SingleDisplayData], max_gap_s
     }
 
     // transpose again,so that rows become cols again
-    let shrinked_display_data: Vec<SingleDisplayData> = shrinked_display_data_transposed.into_iter()
+    let shrinked_display_data: Vec<SingleDisplayData> = shrinked_display_data_transposed
+        .into_iter()
         .map(|x| transpose_single_display_data(x))
         .collect();
 
