@@ -12,17 +12,17 @@ homepage = "https://github.com/playfulFence/esp-max7219-nostd"
 repository = "https://github.com/playfulFence/esp-max7219-nostd"
 
 [dependencies]
-embedded-hal = { version = "0.2.7"}
+embedded-hal = { version = "0.2.7" }
 max7219 = "0.4.2"
 esp-alloc = "0.3.0"
 
-esp-hal = { version = "0.16.0"}
+esp-hal = { git = "https://github.com/esp-rs/esp-hal", package = "esp-hal" }
 
 esp-println = { version = "0.9.0" }
-esp-backtrace = { version = "0.11.0", features = ["panic-handler", "println"]}
+esp-backtrace = { version = "0.11.0", features = ["panic-handler", "println"] }
 
 [features]
-default = [ ]
+default = []
 
 esp32 = ["esp-hal/esp32", "esp-println/esp32", "esp-backtrace/esp32"]
 esp32c3 = ["esp-hal/esp32c3", "esp-println/esp32c3", "esp-backtrace/esp32c3"]
@@ -31,5 +31,3 @@ esp32s3 = ["esp-hal/esp32s3", "esp-println/esp32s3", "esp-backtrace/esp32s3"]
 esp32c6 = ["esp-hal/esp32c6", "esp-println/esp32c6", "esp-backtrace/esp32c6"]
 esp32p4 = ["esp-hal/esp32p4", "esp-println/esp32p4", "esp-backtrace/esp32p4"]
 esp32h2 = ["esp-hal/esp32h2", "esp-println/esp32h2", "esp-backtrace/esp32h2"]
-
-
