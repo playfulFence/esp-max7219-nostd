@@ -129,6 +129,37 @@ pub fn show_moving_text_in_loop<T>(
     }
 }
 
+/// Shows a static text of relatively limited length (5-8 chars).
+/// ** Make sure to call `prepare_display()` first! **
+///
+/// * `display` - mutable reference to Max7219 display driver
+/// * `text` - the text to display
+/// * `display_count` - count of displays connected to the MAX7219
+/// * `max_gap_width` - set's the maximum width/count of empty cols between characters. Recommended is 2. 0 to deactivate.
+/// * `delay` - Delay provider
+///
+pub fn show_static_text<T>(
+    display: &mut MAX7219<T>,
+    text: &str,
+    display_count: usize,
+    max_gap_width: usize,
+    delay : &mut impl DelayMs<u32>,
+)
+where T:Connector {
+    let display_count = display_count % MAX_DISPLAYS;
+
+    let raw_bits = encode_string(text);
+    let mut display_bits;
+    if max_gap_width > 0 {
+        display_bits = remove_gaps_in_display_text(&raw_bits, max_gap_width);
+    } else {
+        display_bits = raw_bits;
+    }
+    for i in 0..display_count {
+        display.write_raw(i, &display_bits[i]).unwrap();
+    }
+}
+
 pub fn show_moving_text_in_loop_with_joystick_interrupt<T>(
     display: &mut MAX7219<T>,
     text: &str,
