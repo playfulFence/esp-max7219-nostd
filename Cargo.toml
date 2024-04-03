@@ -16,7 +16,7 @@ embedded-hal = { version = "0.2.7" }
 max7219 = "0.4.2"
 esp-alloc = "0.3.0"
 
-esp-hal = { git = "https://github.com/esp-rs/esp-hal", package = "esp-hal" }
+esp-hal = { git = "https://github.com/esp-rs/esp-hal", package = "esp-hal", rev = "81a4070"}
 
 esp-println = { version = "0.9.0" }
 esp-backtrace = { version = "0.11.0", features = ["panic-handler", "println"] }
