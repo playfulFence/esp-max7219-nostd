@@ -25,6 +25,7 @@ esp-backtrace = { version = "0.11.0", features = ["panic-handler", "println"] }
 default = []
 
 esp32 = ["esp-hal/esp32", "esp-println/esp32", "esp-backtrace/esp32"]
+esp32c2 = ["esp-hal/esp32c2", "esp-println/esp32c2", "esp-backtrace/esp32c2"]
 esp32c3 = ["esp-hal/esp32c3", "esp-println/esp32c3", "esp-backtrace/esp32c3"]
 esp32s2 = ["esp-hal/esp32s2", "esp-println/esp32s2", "esp-backtrace/esp32s2"]
 esp32s3 = ["esp-hal/esp32s3", "esp-println/esp32s3", "esp-backtrace/esp32s3"]
