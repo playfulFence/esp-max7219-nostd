@@ -8,7 +8,15 @@ use alloc::vec::Vec;
 /// Currently only a very limited alphabet is available and only capital letters. Unknown chars
 /// are mapped to SPACE (empty).
 pub fn encode_char(c: char) -> SingleDisplayData {
-    // currently we only support cap chars
+    match c {
+        '%' => PERCENT,
+        '\u{00B0}' => DEGREE, // ° (Unicode degree sign)
+        // ASCII letters → uppercase for the rest
+        _ => encode_ascii_upper_or_digit(c),
+    }
+}
+
+fn encode_ascii_upper_or_digit(c: char) -> SingleDisplayData {
     let c = c.to_ascii_uppercase();
     match c {
         'A' => CAP_A,
@@ -50,9 +58,10 @@ pub fn encode_char(c: char) -> SingleDisplayData {
         '9' => NINE,
 
         '.' => DOT,
+        ':' => COLON,
         '!' => EXCLAMATION_MARK,
         '?' => QUESTION_MARK,
-        ',' => COMMA, 
+        ',' => COMMA,
 
         ' ' | _ => SPACE,
     }

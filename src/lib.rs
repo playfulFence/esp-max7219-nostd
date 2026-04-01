@@ -1,14 +1,13 @@
 //! Provides utility functions on top of "max7219"-crate to display data (like text) on a
 //! MAX7219 powered matrix display.
 
+#![no_std]
 #![allow(dead_code)]
 #![allow(unused_imports)]
-#![cfg_attr(not(feature = "std"), no_std)]
-#[cfg(not(feature = "std"))]
-#[cfg_attr(not(feature = "std"), macro_use)]
+
+#[macro_use]
 extern crate alloc;
 
-#[cfg(not(feature = "std"))]
 use alloc::vec::Vec;
 use max7219::connectors::Connector;
 use max7219::DataError;
@@ -20,10 +19,7 @@ use max7219::connectors::PinConnector;
 use max7219::DecodeMode;
 use max7219::MAX7219;
 
-use esp_hal;
-
 use embedded_hal::blocking::delay::DelayMs;
-use embedded_hal::blocking::delay::DelayUs;
 
 /// We use 8x8 square matrices (per single display)
 pub const LED_SQUARE_MATRIX_DIM: usize = 8;
@@ -64,6 +60,20 @@ pub fn shift_all_rows_one_bit_left(moving_bits: &mut [SingleDisplayData] /*, rep
                 }
             }
             // shift all in row on to the left
+            moving_bits[display_i][row_i] <<= 1;
+        }
+    }
+}
+
+/// Same as [`shift_all_rows_one_bit_left`], but bits shifted off the **first** module are dropped
+/// (no wrap). Use for finite scroll-off / scroll-in animations.
+pub fn shift_all_rows_one_bit_left_nowrap(moving_bits: &mut [SingleDisplayData]) {
+    let len = moving_bits.len();
+    for display_i in 0..len {
+        for row_i in 0..8 {
+            if moving_bits[display_i][row_i] & 0b10000000 != 0 && display_i > 0 {
+                moving_bits[display_i - 1][row_i] |= 1;
+            }
             moving_bits[display_i][row_i] <<= 1;
         }
     }
@@ -143,18 +153,17 @@ pub fn show_static_text<T>(
     text: &str,
     display_count: usize,
     max_gap_width: usize,
-    delay : &mut impl DelayMs<u32>,
+    _delay: &mut impl DelayMs<u32>,
 )
 where T:Connector {
     let display_count = display_count % MAX_DISPLAYS;
 
     let raw_bits = encode_string(text);
-    let mut display_bits;
-    if max_gap_width > 0 {
-        display_bits = remove_gaps_in_display_text(&raw_bits, max_gap_width);
+    let display_bits = if max_gap_width > 0 {
+        remove_gaps_in_display_text(&raw_bits, max_gap_width)
     } else {
-        display_bits = raw_bits;
-    }
+        raw_bits
+    };
     for i in 0..display_count {
         display.write_raw(i, &display_bits[i]).unwrap();
     }
