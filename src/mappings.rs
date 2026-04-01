@@ -384,6 +384,17 @@ pub const DOT: SingleDisplayData = [
     0,
     0b00010000,
 ];
+/// Clock-style colon (two dots); centered like digit strokes (`0b00010000` column).
+pub const COLON: SingleDisplayData = [
+    0,
+    0,
+    0b00010000,
+    0,
+    0,
+    0b00010000,
+    0,
+    0,
+];
 pub const EXCLAMATION_MARK: SingleDisplayData = [
     0b00010000,
     0b00010000,
@@ -413,4 +424,26 @@ pub const COMMA: SingleDisplayData = [
     0,
     0b00100000,
     0b01100000,
+];
+/// Degree sign (superscript-style small circle, aligned with digits).
+pub const DEGREE: SingleDisplayData = [
+    0,
+    0b00111000,
+    0b01000100,
+    0b01000100,
+    0b00111000,
+    0,
+    0,
+    0,
+];
+/// Percent: two small circles and a slash (mono 8×8).
+pub const PERCENT: SingleDisplayData = [
+    0b01100000,
+    0b10010000,
+    0b01100000,
+    0b00001000,
+    0b00010000,
+    0b00001100,
+    0b00010010,
+    0b00001100,
 ];
